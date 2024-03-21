@@ -4,9 +4,7 @@
 ENV_NAME="kode_env_test"
 
 # Default target
-#all: permissions setup check-environment data-download clean
-all : check-environment data-download
-
+all: permissions setup check-environment data-download clean
 
 ## Make setup.sh executable
 permissions:

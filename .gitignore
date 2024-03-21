@@ -1,6 +1,9 @@
 *.egg-info
 
+*.iml
+*.xml
+
 # ignore the data and results  directory
-data
+/data
 /models
 /reports

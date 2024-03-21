@@ -2,10 +2,11 @@ python-dotenv
 numpy
 matplotlib
 jupyterlab
-pandas
+pandas<2.0.0
 plotly
 scikit-learn
 scipy
 seaborn
 tqdm
 pytest
+h5py

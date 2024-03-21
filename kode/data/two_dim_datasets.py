@@ -1,11 +1,6 @@
-import os.path as path
 import numpy as np
 import sklearn.datasets as datasets
 from sklearn.utils import shuffle as util_shuffle
-import kode.data
-
-data_dir = path.abspath(path.join(__file__, "../../../"))
-data_dir += 'data/raw/'
 
 
 def two_dimensional_data(data, rng=None, batch_size=200):
@@ -131,33 +126,3 @@ def two_dimensional_data(data, rng=None, batch_size=200):
         return np.stack((x, y), 1)
     else:
         return two_dimensional_data("8gaussians", rng, batch_size)
-
-
-def high_dimensional_data(dataset_name):
-    ''' Load high dimensional Data from Normalizing flows'''
-    if dataset_name == "power":
-        dataset = kode.data.power.POWER()
-
-    elif dataset_name == "gas":
-        dataset = kode.data.gas.GAS()
-
-    elif dataset_name == "hepmass":
-        dataset = kode.data.hepmass.HEPMASS()
-
-    elif dataset_name == "miniboone":
-        dataset = kode.data.miniboone.MINIBOONE()
-
-    elif dataset_name == "bsds300":
-        dataset = kode.data.bsds300.BSDS300()
-
-    elif dataset_name == "mnist":
-        dataset = kode.data.mnist.MNIST()
-
-    else:
-        raise AssertionError('Dataset name not recognized.')
-    return dataset
-
-
-def LotkaVolterra():
-    '''Load lotka Volterra data from Baptista et. al.'''
-    return None

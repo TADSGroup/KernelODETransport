@@ -48,6 +48,9 @@ install_pytorch(){
   local torch_install_command="pip install torch torchvision"
 
     if [[ "$OS_NAME" == "Darwin" && "$HARDWARE_NAME" == "arm64" ]]; then
+
+      # Update the mpmath to 1.3.0 for torch. Issue for M1 silicon.
+      $ENV_BIN_PATH/pip install --upgrade mpmath==1.3.0
       torch_install_command="pip install --pre torch torchvision torchaudio
       --extra-index-url https://download.pytorch.org/whl/nightly/cpu"
 
