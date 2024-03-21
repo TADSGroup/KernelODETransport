@@ -6,6 +6,7 @@ OS_NAME="$(uname -s)"
 HARDWARE_NAME="$(uname -m)"
 
 echo "Detected OS: $OS_NAME, Hardware: $HARDWARE_NAME."
+echo
 
 # Function to check if Conda is installed
 check_conda(){
@@ -20,8 +21,10 @@ check_conda(){
 
 # Creating a new Conda environment and activating it
 create_conda_env(){
-  echo "\n Creating a new Conda environment... \n"
+  echo "Creating a new Conda environment..."
   conda create --name "$ENV_NAME" python=3.8 -y
+  echo
+
 }
 
 
@@ -31,9 +34,10 @@ ENV_BIN_PATH="$(conda info --base)/envs/$ENV_NAME/bin"
 
 # Installing Python packages from requirements.txt
 install_requirements(){
-  echo "\n Installing requirements from requirements.txt in the conda
-  environment $ENV_NAME... \n"
+  echo "Installing requirements from requirements.txt in the conda
+  environment $ENV_NAME..."
   "$ENV_BIN_PATH/pip" install -r requirements.txt
+  echo
 }
 
 
@@ -48,8 +52,9 @@ install_pytorch(){
       --extra-index-url https://download.pytorch.org/whl/nightly/cpu"
 
     fi
-  echo "\n Running TORCH install command: $ENV_BIN_PATH/$torch_install_command"
+  echo "Running TORCH install command: $ENV_BIN_PATH/$torch_install_command"
   eval "$ENV_BIN_PATH/$torch_install_command"
+  echo
 }
 
 
@@ -93,15 +98,18 @@ install_jax(){
     fi
   fi
 
-  echo "\n Running JAX install command: $ENV_BIN_PATH/$jax_install_command \n"
+  echo
+  echo "Running JAX install command: $ENV_BIN_PATH/$jax_install_command"
   eval "$ENV_BIN_PATH/$jax_install_command"
+  echo
   }
 
 
 # Install Diffrax and optax
 install_diffrax(){
-  echo "\n Installing Diffrax for solving ODEs in JAX... \n"
+  echo "Installing Diffrax for solving ODEs in JAX..."
   eval "$ENV_BIN_PATH/pip install diffrax optax"
+  echo
 }
 
 
