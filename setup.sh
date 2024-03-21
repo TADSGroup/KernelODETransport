@@ -44,7 +44,7 @@ install_jax(){
 
   # Check if Apple Silicon or Linux
   if [[ "$os_name" == "Darwin" && "$hw_name" == "arm64" ]]; then
-    echo "Detected Apple MacBook Silicon"
+    echo "Detected Apple MacBook Silicon M1"
     jax_install_command="pip install jax-metal"
 
   elif [[ "$os_name" == "Linux" ]]; then
@@ -83,7 +83,8 @@ install_jax(){
 
 # Install Diffrax and optax
 install_diffrax(){
-  pip install diffrax optax
+  echo "Installing Diffrax for solving ODEs in JAX..."
+  eval "$ENV_BIN_PATH/pip install diffrax optax"
 }
 
 

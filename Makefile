@@ -9,6 +9,7 @@ permissions:
 
 ## Setup Python environment
 setup:
+	echo "Setting up Conda environment..."
 	./setup.sh
 
 
