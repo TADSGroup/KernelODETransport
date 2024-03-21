@@ -4,10 +4,8 @@ matplotlib
 jupyterlab
 pandas
 plotly
-torch
 scikit-learn
 scipy
 seaborn
-torchvision
 tqdm
 pytest
