@@ -3,7 +3,7 @@ import sys
 import unittest
 import jax.numpy as jnp
 import torch
-from diffrax import diffeqsolve, ODETerm, Dopri5
+from diffrax import diffeqsolve, ODETerm, Dopri5, SaveAt
 
 REQUIRED_PYTHON = "python3"
 
@@ -50,9 +50,11 @@ class TestEnvironment(unittest.TestCase):
         try:
             term = ODETerm(f)
             solver = Dopri5()
-            solution = diffeqsolve(term, solver, t0=t0, t1=1, dt0=0.1, y0=y0)
+            saveat = SaveAt(ts=[1.0])
+            solution = diffeqsolve(term, solver, t0=t0, t1=1, dt0=0.1, y0=y0,
+                                   saveat=saveat)
             # Evaluate the solution at the final time
-            y_final = solution.evaluate(t1).value
+            y_final = solution.ys[0]
             # Check if the solution at t=1 is close to the expected value
             self.assertTrue(jnp.isclose(y_final, jnp.exp(-1.0), rtol=1e-3),
                         "Diffrax ODE solve did not match expected value. ")
