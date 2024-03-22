@@ -1,7 +1,7 @@
 .PHONY: all permissions setup check-environment data-download clean
 
 
-ENV_NAME="kode_env_test"
+ENV_NAME="kode_env"
 
 # Default target
 all: permissions setup check-environment data-download test-data clean
