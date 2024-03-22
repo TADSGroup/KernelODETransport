@@ -20,7 +20,7 @@ setup:
 ## Check Python environment
 check-environment:
 	@echo "Activating the Conda environment $(ENV_NAME) and running tests..."
-	source activate $(ENV_NAME); python -m unittest test_environment.py
+	@bash -c "source activate $(ENV_NAME); python -m unittest test_environment.py"
 
 
 ## Download datasets
