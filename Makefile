@@ -28,8 +28,7 @@ data-download:
 	@echo "Downloading the datasets"
 	@mkdir -p data
 	@curl -o data/data.tar.gz "https://zenodo.org/records/1161203/files/data.tar.gz?download=1"
-	@tar -xzvf data/data.tar.gz --strip-components=1 -C data/ &&  rm -rf
-	data/data.tar.gz
+	@tar -xzvf data/data.tar.gz --strip-components=1 -C data/
 
 
 ## Delete all compiled Python files
