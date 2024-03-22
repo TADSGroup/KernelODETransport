@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define global variables
-ENV_NAME="kode_env_test"
+ENV_NAME="kode_env"
 OS_NAME="$(uname -s)"
 HARDWARE_NAME="$(uname -m)"
 
