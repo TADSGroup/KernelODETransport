@@ -8,7 +8,7 @@ all: permissions setup check-environment data-download test-data clean
 
 ## Make setup.sh executable
 permissions:
-	echo "Making setup.sh file executable..."
+	@echo "Making setup.sh file executable..."
 	chmod +x setup.sh
 
 ## Setup Python environment

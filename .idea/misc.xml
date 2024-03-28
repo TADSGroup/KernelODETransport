@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="kode_final" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.9.19 (sftp://biraj@owhadi_lab:22/home/biraj/anaconda3/envs/kode_env/bin/python)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.8.19 (sftp://biraj@owhadi_lab:22/home/biraj/anaconda3/envs/kode_env/bin/python)" project-jdk-type="Python SDK" />
   <component name="PyPackaging">
     <option name="earlyReleasesAsUpgrades" value="true" />
   </component>

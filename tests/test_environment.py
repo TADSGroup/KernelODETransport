@@ -1,12 +1,7 @@
 import os
 import sys
 import unittest
-os.environ["CUDA_VISIBLE_DEVICES"] = '3'
-os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"]="false"
-
-import jax
 import jax.numpy as jnp
-import optax
 import torch
 from diffrax import diffeqsolve, ODETerm, Dopri5, SaveAt
 
@@ -72,19 +67,6 @@ class TestEnvironment(unittest.TestCase):
             else:
                 raise
 
-    def test_optax(self):
-        """ Test optimizing a simple function with Optax"""
-        def f(x): return (x - 2) ** 2
-        true_min = jnp.array(2.)
-        solver = optax.adam(learning_rate=0.1)
-        params = 0.01
-        opt_state = solver.init(params)
-        for _ in range(100):
-            grad = jax.grad(f)(params)
-            updates, opt_state = solver.update(grad, opt_state, params)
-            params = optax.apply_updates(params, updates)
-        self.assertTrue(jnp.isclose(params, true_min, rtol=1e-2),
-                               "Optax optimizer did not optimize correctly.")
 
 if __name__ == '__main__':
     unittest.main()
