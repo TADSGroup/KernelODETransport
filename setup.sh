@@ -34,8 +34,7 @@ ENV_BIN_PATH="$(conda info --base)/envs/$ENV_NAME/bin"
 
 # Installing Python packages from requirements.txt
 install_requirements(){
-  echo "Installing requirements from requirements.txt in the conda
-  environment $ENV_NAME..."
+  echo "Installing requirements from requirements.txt in the conda environment $ENV_NAME..."
   "$ENV_BIN_PATH/pip" install -r requirements.txt
   echo
 }
@@ -47,6 +46,7 @@ install_pytorch(){
   # Default installation command
   local torch_install_command="pip install torch torchvision"
 
+    # Apple Silicon
     if [[ "$OS_NAME" == "Darwin" && "$HARDWARE_NAME" == "arm64" ]]; then
 
       # Update the mpmath to 1.3.0 for torch. Issue for M1 silicon.
@@ -80,22 +80,9 @@ install_jax(){
     if command -v nvidia-smi &> /dev/null; then
       # Attempt to determine CUDA version
       local cuda_version=$(nvidia-smi | grep -oP 'CUDA Version: \K\d+')
+      echo "Detected GPU w/ CUDA Version: ${cuda_version}"
+      jax_install_command="pip install --upgrade "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
 
-      echo "Detected CUDA Version: ${cuda_version}"
-
-      case "$cuda_version" in
-        11)
-            jax_install_command="pip install --upgrade 'jax[cuda11_pip]' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
-            ;;
-
-        12)
-            jax_install_command="pip install --upgrade 'jax[cuda12_pip]' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
-            ;;
-        *)
-            echo "Unsupported CUDA version for JAX installation or CUDA not
-            found. Falling back to CPU version."
-            ;;
-      esac
     else
         echo "No NVIDIA GPU detected. Installing JAX for CPU."
     fi
@@ -109,9 +96,9 @@ install_jax(){
 
 
 # Install Diffrax and optax
-install_diffrax(){
-  echo "Installing Diffrax for solving ODEs in JAX..."
-  eval "$ENV_BIN_PATH/pip install diffrax optax"
+install_diffrax_optax(){
+  echo "Installing Diffrax for solving ODEs & Optax for optimizers in JAX..."
+  eval "$ENV_BIN_PATH/pip install diffrax optax==0.1.7"
   echo
 }
 
@@ -123,7 +110,7 @@ main(){
   install_requirements
   install_pytorch
   install_jax
-  install_diffrax
+  install_diffrax_optax
   echo "Setup complete."
 }
 
