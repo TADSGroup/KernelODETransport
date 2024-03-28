@@ -1,16 +1,13 @@
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.cluster import MiniBatchKMeans
-import numpy as np
 import equinox as eqx
 import jax.tree_util as jtu
 import functools as ft
 import jax.numpy as jnp
 from copy import deepcopy
-from tqdm import  tqdm
-from scipy.spatial.distance import pdist
 
 from kode.models.ode_models import KernelODE, Conditional_KernelODE
-from kode.models import utils
+from kode.data import utils
+
 
 class Transporter(BaseEstimator, TransformerMixin):
     def __init__(self, inducing_points, kernel, num_odes, key):
@@ -142,7 +139,7 @@ class Conditional_Transporter(BaseEstimator, TransformerMixin):
                                               self.get_gradient_mask()))
         for i in range(num_epochs):
             for (x, y, c) in utils.DataLoader((X, Y, C), batch_size=batch_size,
-                                           seed=20):
+                                              seed=20):
                 loss, model, opt_state = self.train(model, x, y, c,
                                                     loss_fun,
                                                     rkhs_strength,
