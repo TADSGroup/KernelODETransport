@@ -22,7 +22,7 @@ check_conda(){
 # Creating a new Conda environment and activating it
 create_conda_env(){
   echo "Creating a new Conda environment..."
-  conda create --name "$ENV_NAME" python=3.8 -y
+  conda create --name "$ENV_NAME" python=3.9 -y
   echo
 
 }
