@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define global variables
-ENV_NAME="kode_env"
+ENV_NAME="kode_env_test"
 OS_NAME="$(uname -s)"
 HARDWARE_NAME="$(uname -m)"
 
@@ -45,7 +45,7 @@ install_requirements(){
 install_pytorch(){
 
   # Default installation command
-  local torch_install_command="pip install torch torchvision"
+  local torch_install_command="pip install torch==1.10.1 torchvision"
 
     if [[ "$OS_NAME" == "Darwin" && "$HARDWARE_NAME" == "arm64" ]]; then
 
@@ -85,7 +85,9 @@ install_jax(){
 
       case "$cuda_version" in
         11)
-            jax_install_command="pip install --upgrade 'jax[cuda11_pip]' -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+            jax_install_command="pip install jax[cuda11_pip]==0.3.10 \
+            jaxlib==0.3.10+cuda11.cudnn82 -f \
+            https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
             ;;
 
         12)
@@ -111,7 +113,8 @@ install_jax(){
 # Install Diffrax and optax
 install_diffrax(){
   echo "Installing Diffrax for solving ODEs in JAX..."
-  eval "$ENV_BIN_PATH/pip install diffrax optax"
+  eval "$ENV_BIN_PATH/pip install diffrax==0.2.1 optax==0.1.1 equinox==0.8.0 \
+   chex==0.1.3 jaxtyping==0.2.7"
   echo
 }
 
@@ -121,7 +124,7 @@ main(){
   check_conda
   create_conda_env
   install_requirements
-  install_pytorch
+#  install_pytorch
   install_jax
   install_diffrax
   echo "Setup complete."

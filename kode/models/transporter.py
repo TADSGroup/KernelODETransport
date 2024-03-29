@@ -69,10 +69,10 @@ class Transporter(BaseEstimator, TransformerMixin):
     @eqx.filter_jit
     def get_gradients(self, model, X, Y, loss_fun, rkhs_strength, \
                                     h1_strength):
-        gradient_mask = self.get_gradient_mask()
-        @ft.partial(eqx.filter_value_and_grad, arg=gradient_mask)
-        def regularized_loss(model, X, Y, loss_fun, rkhs_strength, \
-                                  h1_strength):
+        @eqx.filter_value_and_grad
+        def regularized_loss(differentiable_model, static_model, X, Y,
+                             loss_fun, rkhs_strength, h1_strength):
+            model = eqx.combine(differentiable_model, static_model)
             pred = model(X)[-1]
             loss = loss_fun(pred, Y)
 
@@ -85,8 +85,10 @@ class Transporter(BaseEstimator, TransformerMixin):
             return total_loss
 
         # get loss and gradients
-        loss, grads = regularized_loss(model, X, Y, loss_fun,
-                                       rkhs_strength, h1_strength)
+        gradient_mask = self.get_gradient_mask()
+        differentiable_model, static_model = eqx.partition(model, gradient_mask)
+        loss, grads = regularized_loss(differentiable_model, static_model, X,
+                                       Y, loss_fun, rkhs_strength, h1_strength)
         return loss, grads
 
     def train(self, model, X, Y, loss_fun, rkhs_strength,
@@ -175,12 +177,12 @@ class Conditional_Transporter(BaseEstimator, TransformerMixin):
         return 'Optimizer initialized!'
 
     @eqx.filter_jit
-    def get_gradients(self, model, X, Y, C, loss_fun, rkhs_strength, \
-                                    h1_strength):
-        gradient_mask = self.get_gradient_mask()
-        @ft.partial(eqx.filter_value_and_grad, arg=gradient_mask)
-        def regularized_loss(model, X, Y, C, loss_fun, rkhs_strength, \
-                                  h1_strength):
+    def get_gradients(self, model, X, Y, C, loss_fun, rkhs_strength, h1_strength):
+        @eqx.filter_value_and_grad
+        def regularized_loss(differentiable_model, static_model, X, Y, C,
+                             loss_fun, rkhs_strength, h1_strength):
+
+            model = eqx.combine(differentiable_model, static_model)
             pred = model(X, C)[-1]
 
             # concatenate the predictions with the concatenated example
@@ -196,8 +198,12 @@ class Conditional_Transporter(BaseEstimator, TransformerMixin):
             return total_loss
 
         # get loss and gradients
-        loss, grads = regularized_loss(model, X, Y, C, loss_fun,
-                                       rkhs_strength, h1_strength)
+        gradient_mask = self.get_gradient_mask()
+        differentiable_model, static_model = eqx.partition(model,
+                                                           gradient_mask)
+        loss, grads = regularized_loss(differentiable_model, static_model,
+                                       X, Y, C, loss_fun, rkhs_strength,
+                                       h1_strength)
         return loss, grads
 
     def train(self, model, X, Y, C, loss_fun, rkhs_strength,

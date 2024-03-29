@@ -4,7 +4,7 @@
 ENV_NAME="kode_env"
 
 # Default target
-all: permissions setup check-environment data-download test-data clean
+all: permissions setup test-environment data-download test-data clean
 
 ## Make setup.sh executable
 permissions:
@@ -18,7 +18,7 @@ setup:
 
 
 ## Check Python environment
-check-environment:
+test-environment:
 	@echo "Activating the Conda environment $(ENV_NAME) and running tests..."
 	@bash -c "source activate $(ENV_NAME); python -m pytest tests/test_environment.py"
 

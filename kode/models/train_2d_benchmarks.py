@@ -2,6 +2,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"]="false"
 
+import equinox as eqx
 import jax.random as jrandom
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -43,19 +44,17 @@ mmd_loss_fun = loss.MMDLoss(loss_kernel)
 optimizer = utils.get_adam_with_exp_decay()
 
 # initialize the model
-transporter = transporter.Transporter(inducing_points, model_kernel, num_odes,
-                                   key)
-
-import equinox as eqx
-gradient_mask = transporter.get_gradient_mask()
-opt_state = optimizer.init(eqx.filter(transporter.model, gradient_mask))
+transport_model = transporter.Transporter(inducing_points, model_kernel,
+                                        num_odes, key)
+gradient_mask = transport_model.get_gradient_mask()
+opt_state = optimizer.init(eqx.filter(transport_model.model, gradient_mask))
 
 # train loop
 rkhs_strength = 1e-10
 h1_strength = 1e-10
 for epoch in np.arange(101):
-    loss, transporter.model, opt_state = transporter.train(
-        transporter.model, X_train, Y_train, mmd_loss_fun,
+    loss, transport_model.model, opt_state = transport_model.train(
+        transport_model.model, X_train, Y_train, mmd_loss_fun,
         rkhs_strength, h1_strength, optimizer, opt_state, verbose=True)
 
 #
@@ -64,7 +63,7 @@ for epoch in np.arange(101):
 
 
 # transform using the model
-Y_pred, Y_traj = transporter.transform(X_test, mode='forward', trajectory=True)
+Y_pred, Y_traj = transport_model.transform(X_test, mode='forward', trajectory=True)
 
 # plot the reference, target, predictions
 bins = np.linspace(-4, 4, 50)
