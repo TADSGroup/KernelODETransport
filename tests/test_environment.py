@@ -4,7 +4,7 @@ import unittest
 
 import jax
 import jax.numpy as jnp
-# import torch
+import torch
 from diffrax import diffeqsolve, ODETerm, Dopri5, SaveAt
 
 REQUIRED_PYTHON = "python3"
@@ -25,16 +25,16 @@ class TestEnvironment(unittest.TestCase):
         self.assertEqual(arr_sum, 6, "JAX array sum did not match expected "
                                      "value")
 
-    # def test_torch_tensor_creation_and_multiplication(self):
-    #     """Test that PyTorch can create a tensor and compute its
-    #     multiplication."""
-    #     tensor = torch.tensor([1, 2, 3])
-    #     tensor_mul = tensor * 2
-    #     # Convert tensor to list for comparison
-    #     expected_result = [2, 4, 6]
-    #     self.assertListEqual(tensor_mul.tolist(), expected_result, "Pytorch "
-    #                                                                "tensor "
-    #                                                                "multiplication did not match expected values.")
+    def test_torch_tensor_creation_and_multiplication(self):
+        """Test that PyTorch can create a tensor and compute its
+        multiplication."""
+        tensor = torch.tensor([1, 2, 3])
+        tensor_mul = tensor * 2
+        # Convert tensor to list for comparison
+        expected_result = [2, 4, 6]
+        self.assertListEqual(tensor_mul.tolist(), expected_result, "Pytorch "
+                                                                   "tensor "
+                                                                   "multiplication did not match expected values.")
 
     def test_diffrax_ode_solver(self):
         """Test solving a simple ODE using Diffrax"""

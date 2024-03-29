@@ -85,9 +85,13 @@ install_jax(){
 
       case "$cuda_version" in
         11)
-            jax_install_command="pip install jax[cuda11_pip]==0.3.10 \
-            jaxlib==0.3.10+cuda11.cudnn82 -f \
+#            jax_install_command="pip install jax[cuda11_pip]==0.3.10 \
+#            jaxlib==0.3.10+cuda11.cudnn82 -f \
+#            https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+            jax_install_command="pip install jax[cuda11_pip]==0.4.2 \
+            jaxlib==0.4.2+cuda11.cudnn82 -f \
             https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
+
             ;;
 
         12)
@@ -124,7 +128,7 @@ main(){
   check_conda
   create_conda_env
   install_requirements
-#  install_pytorch
+  install_pytorch
   install_jax
   install_diffrax
   echo "Setup complete."
