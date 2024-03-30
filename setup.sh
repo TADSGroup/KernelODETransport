@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define global variables
-ENV_NAME="kode_env_test"
+ENV_NAME="kode_env"
 OS_NAME="$(uname -s)"
 HARDWARE_NAME="$(uname -m)"
 
@@ -85,13 +85,9 @@ install_jax(){
 
       case "$cuda_version" in
         11)
-#            jax_install_command="pip install jax[cuda11_pip]==0.3.10 \
-#            jaxlib==0.3.10+cuda11.cudnn82 -f \
-#            https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
-            jax_install_command="pip install jax[cuda11_pip]==0.4.2 \
-            jaxlib==0.4.2+cuda11.cudnn82 -f \
+            jax_install_command="pip install jax[cuda11_pip]==0.3.10 \
+            jaxlib==0.3.10+cuda11.cudnn82 -f \
             https://storage.googleapis.com/jax-releases/jax_cuda_releases.html"
-
             ;;
 
         12)
@@ -114,7 +110,7 @@ install_jax(){
   }
 
 
-# Install Diffrax and optax
+# Install Diffrax
 install_diffrax(){
   echo "Installing Diffrax for solving ODEs in JAX..."
   eval "$ENV_BIN_PATH/pip install diffrax==0.2.1 optax==0.1.1 equinox==0.8.0 \
@@ -125,10 +121,10 @@ install_diffrax(){
 
 # Main script execution
 main(){
-  check_conda
-  create_conda_env
-  install_requirements
-  install_pytorch
+#  check_conda
+#  create_conda_env
+#  install_requirements
+#  install_pytorch
   install_jax
   install_diffrax
   echo "Setup complete."
