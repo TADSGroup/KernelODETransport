@@ -66,65 +66,24 @@ def sqeuclidean_distances(x, y):
 
 
 def rbf_kernel(x, y, params):
-    """
-    Standard RBF Kernel
-
-    :param x: Input 1
-    :type x: array
-    :param y: Input 2
-    :type y: array
-    :param params: Parameters specific to the kernel
-    :type params: dict
-    :return: Kernel distance
-    :rtype: float
-    """
-    dim = x.shape[-1]
     length_scale = params['length_scale']
-    term = jnp.exp(-sqeuclidean_distances(x, y) / (2 * length_scale ** 2))
-    norm_factor = jnp.sqrt(2 * jnp.pi * length_scale ** 2) ** dim
-    return term / norm_factor
-
-
-def rbf_mixture(x, y, params):
-    dim = x.shape[-1]
-    length_scale = params['length_scale']
-    dist = sqeuclidean_distances(x, y)
-    kvals = jnp.array([jnp.exp(-dist / (2 * l ** 2)) for l in length_scale])
-    norm_factor = jnp.array([jnp.sqrt(2 * jnp.pi * l ** 2) ** dim
-                             for l in length_scale])
-    return jnp.sum(kvals / norm_factor)
-
-def rbf_mixture_unnormalized(x, y, params):
-    length_scale = params['length_scale']
+    if isinstance(length_scale, float):
+        length_scale = [length_scale]
     dist = sqeuclidean_distances(x, y)
     kvals = jnp.array([jnp.exp(-dist / (2 * l ** 2)) for l in length_scale])
     return jnp.sum(kvals)
 
 
 def rq_kernel(x, y, params):
-    """
-    The Rational Quadratic Kernel.
-    K(x, y) = (1 + (x - y) ** 2 / (2 * alpha * l * 2))^-alpha
-
-    :param x: Input 1
-    :type x: array
-    :param y: Input 2
-    :type y: array
-    :param params: Parameters specific to the kernel
-    :type params: dict
-    :return: Kernel distance
-    :rtype: float
-    """
     scale_mixture = params['scale_mixture']
     length_scale = params['length_scale']
-    t1 = sqeuclidean_distances(x, y)
-    t2 = (2 * scale_mixture * length_scale ** 2)
-    return (1 + (t1 / t2)) ** (-scale_mixture)
+
+    if isinstance(scale_mixture, float) :
+        scale_mixture = [scale_mixture]
+    if isinstance(length_scale, float) :
+        length_scale = [length_scale]
 
 
-def rq_mixture(x, y, params):
-    scale_mixture = params['scale_mixture']
-    length_scale = params['length_scale']
     t1 = sqeuclidean_distances(x, y)
     t2 = jnp.array([2 * s * l ** 2 for (s, l) in zip(scale_mixture,
                                                    length_scale)])
@@ -145,6 +104,9 @@ def laplace_kernel(x, y, params):
     :type: float
     '''
     length_scale = params['length_scale']
+
+    if isinstance(length_scale, float):
+        length_scale = [length_scale]
     dist = jnp.sum(jnp.abs(x - y))
     kvals = jnp.array([jnp.exp(-dist / (2 * l ** 2)) for l in length_scale])
     return jnp.sum(kvals)
@@ -191,19 +153,30 @@ def poly_kernel(x, y, params):
     '''
     degree = params['degree']
     offset = params['offset']
+
+    if isinstance(degree, float):
+        degree = [degree]
     kvals = jnp.array([(x.dot(y) + offset) ** d for d in degree])
     return jnp.sum(kvals)
 
 
-def ARD_kernel(x, y, params):
-    return None
+def get_kernel(kernel_name, params):
+    if kernel_name == 'rq':
+        return Kernel(rq_kernel, params)
 
+    elif kernel_name == 'rbf':
+        return Kernel(rbf_kernel, params)
 
-def adjust_kernel_length_scale(kernel, median_dist):
-    adjusted_kernel = deepcopy(kernel)
-    # adjust length scale based on median distance
-    if 'length_scale' in adjusted_kernel.params.keys():
-        length_scales = kernel.params['length_scale']
-        adjusted_kernel.params['length_scale'] = [ls * median_dist for
-                                              ls in length_scales]
-    return adjusted_kernel
+    elif kernel_name == 'laplace':
+        return Kernel(laplace_kernel, params)
+
+    elif kernel_name == 'poly':
+        return Kernel(poly_kernel, params)
+
+    elif kernel_name == 'matern':
+        return Kernel(matern_kernel, params)
+
+    else:
+        available_kernels = 'rq, rbf, laplace, poly, matern'
+        raise ValueError(f"Invalid kernel name: Available "
+                         f"options are: {available_kernels}")

@@ -1,0 +1,95 @@
+import numpy as np
+
+def two_dimensional_data(dataset_name):
+    """
+    Returns predefined hyperaprameters for specified datasets
+    """
+
+    predefined_hyperparams = {
+        'pinwheel': {
+            'num_landmarks': 100,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 501,
+            'num_time_steps': 5,
+            'rkhs_strength': 1e-6,
+            'h1_strength': 1e-6,
+            'batch_size': 5000,
+        },
+        '2spirals': {
+            'num_landmarks': 100,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 501,
+            'num_time_steps': 5,
+            'rkhs_strength': 1e-9,
+            'h1_strength': 1e-8,
+            'batch_size': 5000,
+        },
+        'moons': {
+            'num_landmarks': 150,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 501,
+            'num_time_steps': 3,
+            'rkhs_strength': 1e-9,
+            'h1_strength': 1e-6,
+            'batch_size': 5000,
+        },
+        '8gaussians': {
+            'num_landmarks': 150,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 701,
+            'num_time_steps': 3,
+            'rkhs_strength': 1e-6,
+            'h1_strength': 1e-5,
+            'batch_size': 5000,
+        },
+        'circles': {
+            'num_landmarks': 100,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 501,
+            'num_time_steps': 5,
+            'rkhs_strength': 1e-6,
+            'h1_strength': 1e-7,
+            'batch_size': 5000,
+        },
+        'swissroll': {
+            'num_landmarks': 100,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.1,
+            'num_epochs': 501,
+            'num_time_steps': 5,
+            'rkhs_strength': 1e-7,
+            'h1_strength': 1e-6,
+            'batch_size': 5000,
+        },
+        'checkerboard': {
+            'num_landmarks': 150,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.15,
+            'model_len_scale': 0.05,
+            'num_epochs': 1001,
+            'num_time_steps': 4,
+            'rkhs_strength': 1e-8,
+            'h1_strength': 1e-8,
+            'batch_size': 10000,
+        },
+    }
+
+    return predefined_hyperparams.get(dataset_name, None)
