@@ -10,9 +10,10 @@ from kode.data import utils
 
 
 class Transporter(BaseEstimator, TransformerMixin):
-    def __init__(self, inducing_points, kernel, num_odes, key):
+    def __init__(self, inducing_points, kernel, num_odes, num_steps, key):
         self.inducing_points = inducing_points
         self.num_odes = num_odes
+        self.num_steps = num_steps
         self.kernel = deepcopy(kernel)
         self.key = key
         self.model = KernelODE(self.inducing_points,
@@ -73,7 +74,7 @@ class Transporter(BaseEstimator, TransformerMixin):
         def regularized_loss(differentiable_model, static_model, X, Y,
                              loss_fun, rkhs_strength, h1_strength):
             model = eqx.combine(differentiable_model, static_model)
-            pred = model(X)[-1]
+            pred = model(X, self.num_steps)[-1]
             loss = loss_fun(pred, Y)
 
             # norms
@@ -106,8 +107,10 @@ class Transporter(BaseEstimator, TransformerMixin):
                   f'H1 penalty: {h1_norm}')
         return loss, updated_model, updated_opt_state
 
-    def transform(self, X, mode='forward', trajectory=False):
-        X_trajectory = self.model(X, mode=mode)
+    def transform(self, X, num_steps=None, mode='forward', trajectory=False):
+        if num_steps is None:
+            num_steps = self.num_steps
+        X_trajectory = self.model(X, num_steps, mode=mode)
         X_transformed = X_trajectory[-1]
         if trajectory:
             return X_transformed, X_trajectory

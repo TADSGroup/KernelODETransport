@@ -127,11 +127,21 @@ if __name__ == "__main__":
     for epoch in np.arange(NUM_EPOCHS):
         loss, transport_model.model, opt_state = transport_model.train(
             transport_model.model, X_train, Y_train, mmd_loss_fun,
-            RKHS_STRENGTH, H1_STRENGTH, optimizer, opt_state, verbose=True)
+            RKHS_STRENGTH, H1_STRENGTH, optimizer, opt_state, verbose=False)
+
+        # log the loss
+        h1_norm = transport_model.h1_seminorm_mixed_norm() * H1_STRENGTH
+        rkhs_norm = transport_model.rkhs_norm() * RKHS_STRENGTH
+        train_mmd_loss = loss - h1_norm - rkhs_norm
+
+        # calculate validation loss
+
+
+
 
 
     # save model
-
+    to_save = {'model': transport_model, 'loss': loss, }
 
 # # transform using the model
 # Y_pred, Y_traj = transport_model.transform(X_test, mode='forward', trajectory=True)

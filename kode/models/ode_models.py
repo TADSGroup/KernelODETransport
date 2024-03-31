@@ -42,51 +42,52 @@ class KernelODE(eqx.Module):
     funcs: List[TimeIndependentFunc]
     t0: int
     t1: int
-    num_steps: int
+    num_odes: int
     dt0: float
     anchor_points: jnp.ndarray
     kernel: eqx.Module
 
-    def __init__(self, anchor_points, kernel, num_steps, *, key, **kwargs):
+    def __init__(self, anchor_points, kernel, num_odes, *, key, **kwargs):
         super().__init__(**kwargs)
         self.t0 = 0.
         self.t1 = 1.
-        self.num_steps = num_steps
-        self.dt0 = self.t1 / self.num_steps
+        self.num_odes = num_odes
+        self.dt0 = self.t1 / self.num_odes
         self.anchor_points = anchor_points
         self.kernel = kernel
 
-        keys = random.split(key, self.num_steps)
+        keys = random.split(key, self.num_odes)
         self.funcs = [
             TimeIndependentFunc(self.anchor_points, self.kernel, key=k) for k
             in keys]
 
     def __call__(self, y0, num_steps=10, mode='forward'):
         solver = dfx.Heun()
-        out = jnp.zeros((self.num_steps + 1, len(y0), y0.shape[
-            1]))
+        out = jnp.zeros(((num_steps * self.num_odes) + 1, len(y0),
+                         y0.shape[1]))
         out = out.at[0].set(y0)
 
         if mode == 'forward':
-            t_steps = jnp.linspace(self.t0, self.t1, self.num_steps + 1)
+            t_steps = jnp.linspace(self.t0, self.t1, self.num_odes + 1)
             func_list = self.funcs
         elif mode == 'backward':
-            t_steps = jnp.linspace(self.t1, self.t0, self.num_steps + 1)
+            t_steps = jnp.linspace(self.t1, self.t0, self.num_odes + 1)
             func_list = self.funcs[::-1]
 
-        for i in range(1, self.num_steps + 1):
+        for i in range(1, self.num_odes + 1):
             t_start = t_steps[i - 1]
             t_end = t_steps[i]
             dt0 = (t_end - t_start) / num_steps
-            save_at = jnp.array([t_end])
+            save_at = jnp.linspace(t_start, t_end, num_steps + 1)[1:]
 
             func = func_list[i - 1]
             term = dfx.ODETerm(func)
             sol = dfx.diffeqsolve(term, solver, t0=t_start, t1=t_end,
                                   dt0=dt0, y0=y0,
                                   saveat=dfx.SaveAt(ts=save_at))
-            y0 = sol.ys[-1]
-            out = out.at[i].set(y0)
+            ys = sol.ys
+            out = out.at[num_steps * (i-1) + 1: num_steps * (i) + 1].set(ys)
+            y0 = ys[-1]
         return out.squeeze()
 
     def rkhs_norm(self):
@@ -100,7 +101,7 @@ class KernelODE(eqx.Module):
         return norm
 
     def h1_seminorm_of_weights(self):
-        if self.num_steps == 1:
+        if self.num_odes == 1:
             return 0
         else:
             weights = jnp.array([func.weights for func in self.funcs])
@@ -114,8 +115,8 @@ class KernelODE(eqx.Module):
         return l2 + h1_seminorm
 
     def h1_seminorm_mixed_norm(self):
-        assert self.num_steps > 0, 'The num time steps should be positive'
-        if self.num_steps == 1:
+        assert self.num_odes > 0, 'The num time steps should be positive'
+        if self.num_odes == 1:
             return 0
         else:
             weights = jnp.array([func.weights for func in self.funcs])

@@ -23,8 +23,6 @@ X_train, X_test = train_test_split(X, train_size=5000, random_state=2)
 Y_train, Y_test = train_test_split(Y, train_size=5000, random_state=2)
 
 
-
-
 # find inducing points and median distance
 num_inducing_points = 100
 inducing_points, median_distance = utils.find_inducing_points(X_train,
@@ -34,13 +32,14 @@ inducing_points, median_distance = utils.find_inducing_points(X_train,
 
 # model params
 model_params = {'length_scale': [0.1 * median_distance]}
-num_odes = 5
+num_odes = 2
+num_steps = 10
 key = jrandom.PRNGKey(10)
-model_kernel = kernels.Kernel(kernels.rbf_mixture_unnormalized, model_params)
+model_kernel = kernels.get_kernel('rbf', model_params)
 
 # define the loss function and parameters
 loss_params = {'length_scale': [0.15 * median_distance]}
-loss_kernel = kernels.Kernel(kernels.laplace_kernel, loss_params)
+loss_kernel = kernels.get_kernel('laplace', loss_params)
 mmd_loss_fun = losses.MMDLoss(loss_kernel)
 
 # initialize the optimizer
@@ -48,9 +47,10 @@ optimizer = utils.get_adam_with_exp_decay()
 
 # initialize the model
 transport_model = transporter.Transporter(inducing_points, model_kernel,
-                                        num_odes, key)
+                                        num_odes, num_steps, key)
 gradient_mask = transport_model.get_gradient_mask()
 opt_state = optimizer.init(eqx.filter(transport_model.model, gradient_mask))
+
 
 # train loop
 rkhs_strength = 1e-10
@@ -66,11 +66,19 @@ for epoch in np.arange(101):
 
 
 # transform using the model
-Y_pred, Y_traj = transport_model.transform(X_test, mode='forward', trajectory=True)
+Y_pred, Y_traj = transport_model.transform(X_test, num_steps=1,
+                                           mode='forward', trajectory=True)
 
 # plot the reference, target, predictions
 bins = np.linspace(-4, 4, 50)
 fig = plt.figure(figsize=(12, 4))
 ax1, ax2, ax3 = visualize.plot_2d_distributions(fig, X_test, Y_test, Y_pred,
                                                 bins, bins)
+plt.show()
+
+
+# plot the trajectory
+fig = plt.figure()
+ax = fig.add_subplot(111)
+visualize.plot_2d_trajectories(ax, Y_traj, 70, seed=20)
 plt.show()
