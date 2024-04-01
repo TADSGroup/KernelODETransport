@@ -21,9 +21,12 @@ def plot_distribution(ax, reference, target, prediction):
     return ax
 
 
-def plot_loss(ax, train_epochs, train_loss, test_epochs, test_loss):
-    ax.semilogy(train_epochs, train_loss, label='train loss')
-    ax.semilogy(test_epochs, test_loss, label='test_loss')
+def plot_loss(ax, train_epochs, train_mmd_loss, h1_norm, rkhs_norm,
+              test_epochs, test_mmd_loss):
+    ax.semilogy(train_epochs, train_mmd_loss, label='Train MMD loss')
+    ax.semilogy(train_epochs, rkhs_norm, label='RKHS norm')
+    ax.semilogy(train_epochs, h1_norm, label='H1 norm')
+    ax.semilogy(test_epochs, test_mmd_loss, label='Test MMD loss')
     ax.set_xlabel('Epochs')
     ax.set_ylabel('Loss')
     plt.legend()
