@@ -20,6 +20,8 @@ def parse_args():
     parser.add_argument("--file-name", type=str, required=True,
                         help="Name of the file name with the trained model. "
                              "It will be loaded from models/ folder.")
+    parser.add_argument('--num-steps', type=int, default=10,
+                        help='Number of discrete steps for ODE solver.')
     parser.add_argument("--cuda-device", type=str, default='2',
                         help="CUDA device ID.")
     return parser.parse_args()
@@ -28,6 +30,7 @@ def parse_args():
 def main():
     args = parse_args()
     dataset = args.dataset
+    num_steps = args.num_steps
     file_name = args.file_name
 
     # set CUDA device
@@ -46,7 +49,7 @@ def main():
     transport_model = to_load['model']
 
     # model predictions
-    predictions, trajectory = transport_model.transform(X, num_steps=20,
+    predictions, trajectory = transport_model.transform(X, num_steps=num_steps,
                                                      trajectory=True)
 
     # Plot results
