@@ -121,10 +121,11 @@ class Transporter(BaseEstimator, TransformerMixin):
 
 class Conditional_Transporter(BaseEstimator, TransformerMixin):
     def __init__(self, inducing_points, conditional_dim, kernel, num_odes,
-                 key):
+                 num_steps, key):
         self.inducing_points = inducing_points
         self.conditional_dim = conditional_dim
         self.num_odes = num_odes
+        self.num_steps = num_steps
         self.kernel = deepcopy(kernel)
         self.key = key
         self.model = Conditional_KernelODE(self.inducing_points,
@@ -186,7 +187,7 @@ class Conditional_Transporter(BaseEstimator, TransformerMixin):
                              loss_fun, rkhs_strength, h1_strength):
 
             model = eqx.combine(differentiable_model, static_model)
-            pred = model(X, C)[-1]
+            pred = model(X, C, self.num_steps)[-1]
 
             # concatenate the predictions with the concatenated example
             pred_cond = jnp.column_stack((C, pred))
@@ -224,8 +225,11 @@ class Conditional_Transporter(BaseEstimator, TransformerMixin):
                   f'H1 penalty: {h1_norm}')
         return loss, updated_model, updated_opt_state
 
-    def transform(self, X, C, mode='forward', trajectory=False):
-        X_trajectory = self.model(X, C, mode=mode)
+    def transform(self, X, C, num_steps=None, mode='forward',
+                  trajectory=False):
+        if num_steps is None:
+            num_steps = self.num_steps
+        X_trajectory = self.model(X, C, num_steps, mode=mode)
         X_transformed = X_trajectory[-1]
         if trajectory:
             return X_transformed, X_trajectory

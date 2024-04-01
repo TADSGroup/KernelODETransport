@@ -175,24 +175,24 @@ class Conditional_KernelODE(eqx.Module):
     funcs: List[Conditional_TimeIndependentFunc]
     t0: int
     t1: int
-    num_steps: int
+    num_odes: int
     conditioning_dim: int
     dt0: float
     anchor_points: jnp.ndarray
     kernel: eqx.Module
 
-    def __init__(self, anchor_points, kernel, conditioning_dim, num_steps,
+    def __init__(self, anchor_points, kernel, conditioning_dim, num_odes,
                  *, key, **kwargs):
         super().__init__(**kwargs)
         self.t0 = 0.
         self.t1 = 1.
-        self.num_steps = num_steps
-        self.dt0 = self.t1 / self.num_steps
+        self.num_odes = num_odes
+        self.dt0 = self.t1 / self.num_odes
         self.anchor_points = anchor_points
         self.conditioning_dim = conditioning_dim
         self.kernel = kernel
 
-        keys = random.split(key, self.num_steps)
+        keys = random.split(key, self.num_odes)
         self.funcs = [
             Conditional_TimeIndependentFunc(self.anchor_points,
                                              self.conditioning_dim,
@@ -200,30 +200,31 @@ class Conditional_KernelODE(eqx.Module):
 
     def __call__(self, y0, conditioning_data, num_steps=10, mode='forward'):
         solver = dfx.Heun()
-        out = jnp.zeros((self.num_steps + 1, len(y0), y0.shape[
-            1]))
+        out = jnp.zeros(((num_steps * self.num_odes) + 1, len(y0),
+                         y0.shape[1]))
         out = out.at[0].set(y0)
 
         if mode == 'forward':
-            t_steps = jnp.linspace(self.t0, self.t1, self.num_steps + 1)
+            t_steps = jnp.linspace(self.t0, self.t1, self.num_odes + 1)
             func_list = self.funcs
         elif mode == 'backward':
-            t_steps = jnp.linspace(self.t1, self.t0, self.num_steps + 1)
+            t_steps = jnp.linspace(self.t1, self.t0, self.num_odes + 1)
             func_list = self.funcs[::-1]
 
-        for i in range(1, self.num_steps + 1):
+        for i in range(1, self.num_odes + 1):
             t_start = t_steps[i - 1]
             t_end = t_steps[i]
             dt0 = (t_end - t_start) / num_steps
-            save_at = jnp.array([t_end])
+            save_at = jnp.linspace(t_start, t_end, num_steps + 1)[1:]
 
             func = func_list[i - 1]
             term = dfx.ODETerm(func)
             sol = dfx.diffeqsolve(term, solver, t0=t_start, t1=t_end,
                                   dt0=dt0, y0=y0, args=conditioning_data,
                                   saveat=dfx.SaveAt(ts=save_at))
-            y0 = sol.ys[-1]
-            out = out.at[i].set(y0)
+            ys = sol.ys
+            out = out.at[num_steps * (i-1) + 1: num_steps * (i) + 1].set(ys)
+            y0 = ys[-1]
         return out.squeeze()
 
     def rkhs_norm(self):
@@ -265,8 +266,6 @@ class Conditional_KernelODE(eqx.Module):
         l2 = self.l2_norm_of_weights()
         h1_seminorm = self.h1_seminorm_of_weights()
         return l2 + h1_seminorm
-
-
 
 
     def h1_norm_mixed_norm(self):
