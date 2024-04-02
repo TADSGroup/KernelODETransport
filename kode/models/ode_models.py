@@ -100,19 +100,6 @@ class KernelODE(eqx.Module):
         norm *= self.dt0
         return norm
 
-    def h1_seminorm_of_weights(self):
-        if self.num_odes == 1:
-            return 0
-        else:
-            weights = jnp.array([func.weights for func in self.funcs])
-            dweights_dt = jnp.gradient(weights, self.dt0, axis=0)
-            norm = jnp.sum(dweights_dt ** 2) * self.dt0
-            return norm
-
-    def h1_norm_of_weights(self):
-        l2 = self.l2_norm_of_weights()
-        h1_seminorm = self.h1_seminorm_of_weights()
-        return l2 + h1_seminorm
 
     def h1_seminorm_mixed_norm(self):
         assert self.num_odes > 0, 'The num time steps should be positive'
@@ -127,11 +114,6 @@ class KernelODE(eqx.Module):
                               dweights_dt[i].T)) for i in range(len(weights))])
             norm = jnp.sum(norm_over_time) * self.dt0
             return norm
-
-    def h1_norm_mixed_norm(self):
-        h1_seminorm = self.h1_seminorm_mixed_norm()
-        l2_norm = self.rkhs_norm()
-        return h1_seminorm + l2_norm
 
 
 
@@ -239,8 +221,8 @@ class Conditional_KernelODE(eqx.Module):
 
 
     def h1_seminorm_mixed_norm(self):
-        assert self.num_steps > 0, 'The num time steps should be positive'
-        if self.num_steps == 1:
+        assert self.num_odes > 0, 'The num time steps should be positive'
+        if self.num_odes == 1:
             return 0
         else:
             weights = jnp.array([func.weights for func in self.funcs])
@@ -251,24 +233,3 @@ class Conditional_KernelODE(eqx.Module):
                               dweights_dt[i].T)) for i in range(len(weights))])
             norm = jnp.sum(norm_over_time) * self.dt0
             return norm
-
-
-    def h1_seminorm_of_weights(self):
-        if self.num_steps == 1:
-            return 0
-        else:
-            weights = jnp.array([func.weights for func in self.funcs])
-            dweights_dt = jnp.gradient(weights, self.dt0, axis=0)
-            norm = jnp.sum(dweights_dt ** 2) * self.dt0
-            return norm
-
-    def h1_norm_of_weights(self):
-        l2 = self.l2_norm_of_weights()
-        h1_seminorm = self.h1_seminorm_of_weights()
-        return l2 + h1_seminorm
-
-
-    def h1_norm_mixed_norm(self):
-        h1_seminorm = self.h1_seminorm_mixed_norm()
-        l2_norm = self.rkhs_norm()
-        return h1_seminorm + l2_norm

@@ -106,3 +106,15 @@ def plot_multidim_marginals(X, bins=None,  vmin=0, vmax=0.15, title=None,
     g.figure.suptitle(title)
     plt.show()
     return g
+
+
+def plot_conditional_density(ax, Y_true, Y_predicted, labels=['True',
+                                                          'Predicted']):
+    ax = sns.kdeplot(np.array(Y_true), color='r', linestyle='-',
+                     bw_method=0.1, label=labels[0])
+    ax = sns.kdeplot(np.array(Y_predicted), color='r', lw=4, linestyle='--',
+                     bw_method=0.1, label=labels[1])
+    plt.xlabel('u')
+    plt.ylabel('P(u)')
+    plt.legend()
+    return ax

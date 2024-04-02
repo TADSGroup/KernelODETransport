@@ -59,3 +59,11 @@ def get_adam_with_exp_decay():
                                                           staircase=False)
     optim = optax.adam(learning_rate=exponential_decay_scheduler)
     return optim
+
+
+
+def find_points_in_same_bin(conditioned_value, Y0, Y1, bins):
+    binned = np.digitize(Y0, bins)
+    bin_index = np.digitize(conditioned_value, bins)[0, 0]
+    points_in_bin = Y1[binned.flatten() == bin_index]
+    return points_in_bin

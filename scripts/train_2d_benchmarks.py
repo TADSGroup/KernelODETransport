@@ -69,6 +69,8 @@ def parse_args():
     final_hyperparams = predefined_hyperparams.copy()
     # Update user-specified values that differ from the argument parser
     final_hyperparams.update(user_args)
+    # add save file name to the dict
+    final_hyperparams["save_name"] = args.save_name
 
     return argparse.Namespace(**final_hyperparams)
 
@@ -204,6 +206,9 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=(12, 4))
     ax1, ax2, ax3 = visualize.plot_2d_distributions(fig, X_test, Y_test,
                                                 test_pred, bins, bins)
+    ax1.set_title('Train')
+    ax2.set_title('Test')
+    ax3.set_title('Predicted')
     fig.savefig(reports_path + figure_name, bbox_inches='tight', dpi=300)
 
 
