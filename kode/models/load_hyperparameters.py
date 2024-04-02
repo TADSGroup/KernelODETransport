@@ -209,3 +209,79 @@ def two_dimensional_data_conditional(dataset_name):
     }
 
     return predefined_hyperparams.get(dataset_name, None)
+
+
+def high_dimensional_data(dataset_name):
+    """
+    Returns predefined hyperaprameters for specified datasets
+    """
+
+    predefined_hyperparams = {
+        'power': {
+            'num_inducing_points': 1000,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.1,
+            'model_len_scale': 0.1,
+            'num_epochs': 11,
+            'num_odes': 2,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 2048,
+        },
+        'gas': {
+            'num_inducing_points': 2000,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.1,
+            'model_len_scale': 0.1,
+            'num_epochs': 11,
+            'num_odes': 4,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 2048,
+        },
+        'hepmass': {
+            'num_inducing_points': 2000,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.1,
+            'model_len_scale': 0.05,
+            'num_epochs': 20,
+            'num_odes': 2,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 1024,
+        },
+        'miniboone': {
+            'num_inducing_points': 1000,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.1,
+            'model_len_scale': 0.05,
+            'num_epochs': 20,
+            'num_odes': 2,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 1024,
+        },
+        'bsds300': {
+            'num_inducing_points': 2000,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_len_scale': 0.1,
+            'model_len_scale': 0.05,
+            'num_epochs': 7,
+            'num_odes': 2,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 512,
+        }
+    }
+
+    return predefined_hyperparams.get(dataset_name, None)
