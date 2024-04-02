@@ -4,15 +4,15 @@
 ENV_NAME="kode_env"
 
 # Default target
-all: permissions setup test-environment data-download test-data clean
+all: set-permissions setup-environment test-environment download-data test-data clean
 
 ## Make setup.sh executable
-permissions:
+set-permissions:
 	@echo "Making setup.sh file executable..."
 	chmod +x setup.sh
 
 ## Setup Python environment
-setup:
+setup-environment:
 	@echo "Setting up Conda environment..."
 	./setup.sh
 
@@ -24,7 +24,7 @@ test-environment:
 
 
 ## Download datasets
-data-download:
+download-data:
 	@echo "Downloading the datasets"
 	@mkdir -p data
 	@curl -o data/data.tar.gz "https://zenodo.org/records/1161203/files/data.tar.gz?download=1"

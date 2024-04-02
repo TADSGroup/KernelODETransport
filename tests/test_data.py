@@ -1,5 +1,5 @@
 import unittest
-from kode.data import load_dataset
+from kode.data import load_dataset, utils
 
 
 class test_load_dataset(unittest.TestCase):
@@ -17,6 +17,20 @@ class test_load_dataset(unittest.TestCase):
             data = load_dataset.high_dimensional_data(data_name).trn.x
             self.assertEqual(data.shape[1], true_dim, f'{data_name} dataset '
                                                      f'is  not correctly loaded.')
+
+
+    def test_utils_dataloader(self):
+        data = load_dataset.high_dimensional_data('power')
+        train = data.trn.x[:10020]
+        batch_size = 1000
+        expected_iters = int(len(train) / batch_size) # 10
+        counter = 0
+        for X_batch in utils.DataLoader([train], batch_size=batch_size, \
+                seed=20):
+            counter += 1
+        self.assertEqual(counter, expected_iters, f'utils.DataLoader is '
+                                                       f'not working. '
+                                                       f'Expected iterations and actual iterations do not match.')
 
 
 if __name__ == '__main__':
