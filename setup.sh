@@ -121,10 +121,10 @@ install_diffrax(){
 
 # Main script execution
 main(){
-#  check_conda
-#  create_conda_env
-#  install_requirements
-#  install_pytorch
+  check_conda
+  create_conda_env
+  install_requirements
+  install_pytorch
   install_jax
   install_diffrax
   echo "Setup complete."
