@@ -61,9 +61,9 @@ def main():
     fig = plt.figure(figsize=(12, 4))
     ax1, ax2, ax3 = visualize.plot_2d_distributions(fig, X, Y, predictions,
                                                     bins, bins)
-    ax1.set_title('Train')
-    ax2.set_title('Test')
-    ax3.set_title('Predicted')
+    ax1.set_title(r'Reference $\eta$')
+    ax2.set_title(r'Target $\nu$')
+    ax3.set_title(r'Predicted $\widehat{\nu}$')
     fig.savefig(reports_path + figure_name, bbox_inches='tight', dpi=300)
     print(f'Saved figure {figure_name}')
 

@@ -297,7 +297,7 @@ def lotka_volterra():
             'num_inducing_points': 1000,
             'output_dim': 4,
             'loss_kernel_name': 'laplace',
-            'model_kernel_name': 'rbf',
+            'model_kernel_name': 'laplace',
             'loss_kernel_multiplier': 0.1,
             'model_kernel_multiplier': 0.05,
             'num_epochs': 401,
