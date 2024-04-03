@@ -100,6 +100,12 @@ plt.show()
 ``` 
 
 ![png](pinwheel_predictions.png)
+<p align="center">
+<img align="middle" src="./2024-04-01_pinwheel_trajectory_video.gif" 
+width="250" 
+height="250" />
+</p>
+
 
 ## Reproducing experiments
 
@@ -147,12 +153,6 @@ To reproduce our results on lotka volterra experiment, run:
 ```
 python scripts/train_lotka_volterra.py --save-name lv_experiment
 ```
-
-[//]: # (<p align="center">)
-
-[//]: # (<img align="middle" src="./assets/github_flow.gif" width="400" height="400" />)
-
-[//]: # (</p>)
 
 ## Acknowledgements
 This material is in part based upon work supported by the US National 
