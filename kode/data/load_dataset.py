@@ -2,6 +2,7 @@ import os.path as path
 import numpy as np
 import sklearn.datasets as datasets
 from sklearn.utils import shuffle as util_shuffle
+from sklearn.preprocessing import StandardScaler
 import kode.data
 
 data_dir = path.abspath(path.join(__file__, "../../../"))
@@ -158,6 +159,22 @@ def high_dimensional_data(dataset_name):
     return dataset
 
 
-def LotkaVolterra():
+def lotka_volterra(num_trajectories, time_steps=20, normalize=True):
     '''Load lotka Volterra data from Baptista et. al.'''
-    return None
+    lv = kode.data.lotka_volterra.DeterministicLotkaVolterra(time_steps)
+    parameters = lv.sample_prior(num_trajectories)
+    trajectories, t = lv.sample_data(parameters)
+
+    if normalize:
+        # standardize data
+        parameters_scaler = StandardScaler()
+        scaled_parameters = parameters_scaler.fit_transform(parameters)
+
+        trajectory_scaler = StandardScaler()
+        scaled_trajectories = trajectory_scaler.fit_transform(trajectories)
+
+        return (lv, scaled_parameters, scaled_trajectories, t,
+                parameters_scaler, trajectory_scaler)
+
+    else:
+        return lv, parameters, trajectories, t

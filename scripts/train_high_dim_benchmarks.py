@@ -107,7 +107,7 @@ if __name__ == "__main__":
     key = jrandom.PRNGKey(20)
     rng = np.random.RandomState(20)
     data = load_dataset.high_dimensional_data(dataset)
-    Y_train, Y_test = data.trn.x[:10001], data.tst.x[:10001]
+    Y_train, Y_test = data.trn.x, data.tst.x
     num_train, num_test = len(Y_train), len(Y_test)
     dim = Y_train.shape[1]
     X = np.random.normal(size=(num_train + num_test, dim))

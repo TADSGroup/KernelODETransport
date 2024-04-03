@@ -285,3 +285,28 @@ def high_dimensional_data(dataset_name):
     }
 
     return predefined_hyperparams.get(dataset_name, None)
+
+
+def lotka_volterra():
+    """
+    Returns predefined hyperaprameters for specified datasets
+    """
+
+    predefined_hyperparams = {
+        'lotka_volterra': {
+            'num_inducing_points': 1000,
+            'output_dim': 4,
+            'loss_kernel_name': 'laplace',
+            'model_kernel_name': 'rbf',
+            'loss_kernel_multiplier': 0.1,
+            'model_kernel_multiplier': 0.05,
+            'num_epochs': 401,
+            'num_odes': 1,
+            'num_steps': 10,
+            'rkhs_strength': 1e-11,
+            'h1_strength': 1e-11,
+            'batch_size': 2048,
+        }
+    }
+
+    return predefined_hyperparams.get('lotka_volterra', None)

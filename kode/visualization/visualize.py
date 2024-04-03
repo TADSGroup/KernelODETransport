@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import scipy.stats as stats
 
 
 def plot_distribution(ax, reference, target, prediction):
@@ -118,3 +119,55 @@ def plot_conditional_density(ax, Y_true, Y_predicted, labels=['True',
     plt.ylabel('P(u)')
     plt.legend()
     return ax
+
+
+def plot_lv_matrix(x_samps, limits, xtrue=None, symbols=None,
+                   save_dir='.'):
+    'Function for plotting lv matrix,see example DLV_MCMCposterior.png in this folder for sample output'
+    'x_samps: Nx4 vector of cordinates, should be posterior samples of paramters alpha, beta, gamma, delta ' \
+    'conditioned on the data'
+    'limits: x,y limits for plots, I recommend keeping defaults'
+    'symbolds: x,y axes symobols'
+    'save_dir: which linux directory to save plot to'
+
+    # plt.rc('text', usetex=True)
+    plt.rc('font', size=12)
+    dim = x_samps.shape[1]
+    fig = plt.figure(figsize=(12, 12))
+
+    for i in range(dim):
+        for j in range(i + 1):
+            ax = plt.subplot(dim, dim, (i * dim) + j + 1)
+            if i == j:
+                plt.hist(x_samps[:, i], bins=100, density=True,
+                         color='orange')
+                if xtrue is not None:
+                    plt.axvline(xtrue[i], ls='--', color='k', linewidth=5)
+                plt.xlim(limits[i])
+            else:
+                plt.plot(x_samps[:, j], x_samps[:, i], '.k',
+                         markersize=.04, alpha=0.1)
+                if xtrue is not None:
+                    plt.plot(xtrue[j], xtrue[i], '.r', markersize=20,
+                             label='Truth', markeredgecolor='k',
+                             markerfacecolor='w', markeredgewidth=5)
+                # Peform the kernel density estimate
+                xlim = limits[j]
+                ylim = limits[i]
+                xx, yy = np.mgrid[xlim[0]:xlim[1]:100j,
+                         ylim[0]:ylim[1]:100j]
+                positions = np.vstack([xx.ravel(), yy.ravel()])
+                kernel = stats.gaussian_kde(x_samps[:, [j, i]].T)
+                f = np.reshape(kernel(positions), xx.shape)
+                ax.contourf(xx, yy, f, cmap='Oranges')
+                plt.ylim(limits[i])
+            plt.xlim(limits[j])
+            if symbols is not None:
+                if j == 0:
+                    plt.ylabel(symbols[i], size=25)
+                if i == len(xtrue) - 1:
+                    plt.xlabel(symbols[j], size=25)
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.95)
+    # plt.savefig(f'{save_dir}/DLV_MCMCposterior.png', bbox_inches='tight')
+    return fig
